@@ -37,7 +37,7 @@ for filename in annot_files:
     class_labels.append(class_label)
     bbox_labels.append(bbox_label)
 
-def printDetails():
+def printDetails(X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box):
   print("Image shape : Num of images,h,w,dimension :",images.shape)
   print("Class labels shape :",class_labels.shape)
   print("Box labels shape :",bbox_labels.shape)
@@ -54,7 +54,11 @@ def printDetails():
 
 
 images,class_labels,bbox_labels = np.array(images),np.array(class_labels),np.array(bbox_labels)
-X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box  = train_test_split(
-    images, class_labels, bbox_labels, test_size=0.30, random_state=42)
-printDetails()
 
+def r():
+  X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box  = train_test_split(
+      images, class_labels, bbox_labels, test_size=0.30, random_state=42)
+  # printDetails(X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box)
+  return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box
+
+r()

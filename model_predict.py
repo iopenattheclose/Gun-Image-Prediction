@@ -16,9 +16,30 @@ def predict(input_img_arr, model ,mode='single'):
   else:
     pred_box, class_prob = model.predict(input_img_arr)
     return pred_box, class_prob
-  
 
-X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history = startTrain()
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+
+    except Exception as e:
+      raise Exception(e)
+
+
+def load_model():
+    try:
+        model_path=os.path.join("artifacts","model.pkl")
+        # preprocessor_path=os.path.join("artifacts","preprocessor.pkl")
+        model=load_object(file_path=model_path)
+        # preprocessor=load_object(file_path=preprocessor_path)
+        # data_scaled=preprocessor.transform(features)
+        # preds=model.predict(data_scaled)
+        return model
+    
+    except Exception as e:
+        raise Exception(e)
+    
+X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history = load_model()
 predict(X_test[0], ResNet101_final)
 eval_res = ResNet101_final.evaluate(X_test, {"class_output":y_test_class, "box_output":y_test_box})
 print(f'''Total Loss: {eval_res[0]}\nBBox MSE Loss{eval_res[1]}\nClass BCE Loss: {eval_res[2]}\nBBox MSE: {eval_res[3]}\nAccuracy Score: {eval_res[4]}\n''')
@@ -72,4 +93,8 @@ pred_box, class_prob = predict(img, ResNet101_final)
 print("Ground Truth: ",label )
 print("Predicted Bbox :", pred_box)
 
-plot_prediction(img, label, pred_box)
+# plot_prediction(img, label, pred_box)
+
+if __name__ == "__main__":
+  plot_prediction(img, label, pred_box)
+   

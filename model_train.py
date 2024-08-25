@@ -1,6 +1,9 @@
 import tensorflow as tf
 from preprocess1 import *
+import pickle
+import dill
 
+trained_model_file_path=os.path.join("artifacts","model.pkl")
 log_dir = "pistol_Log"
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
 
@@ -64,5 +67,21 @@ def startTrain():
                               )
    # print(history)
    return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history
+
+
+
+def save_object(file_path, obj):
+    try:
+        dir_path = os.path.dirname(file_path)
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        with open(file_path, "wb") as file_obj:
+            dill.dump(obj, file_obj)
+
+    except Exception as e:
+        raise Exception(e)
+    
 if __name__ == "__main__":
     startTrain()
+    save_object(trained_model_file_path,ResNet101_final)

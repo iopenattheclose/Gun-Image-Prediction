@@ -34,7 +34,6 @@ for i in range(5):
   img_path = f'{datapath}pistol_images/{i+1}.jpg'
   label_path = f'{datapath}pistol_annotations/{i+1}.txt'
 
-
   img = plt.imread(img_path)
 
   with open(label_path,'r') as f:

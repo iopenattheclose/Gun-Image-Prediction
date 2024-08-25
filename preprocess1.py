@@ -1,9 +1,11 @@
 import numpy as np
 from filepath import *
 from sklearn.model_selection import train_test_split
+import dill
 
 datapath, annot_files, img_files = getImageFolderDetails()
-
+train_data_path: str=os.path.join('artifacts',"train.pkl")
+test_data_path: str=os.path.join('artifacts',"test.pkl")
 
 def return_bbox(label_path):
   ''' read and return bbox from text file'''
@@ -55,10 +57,39 @@ def printDetails(X_train, X_test, y_train_class, y_test_class, y_train_box, y_te
 
 images,class_labels,bbox_labels = np.array(images),np.array(class_labels),np.array(bbox_labels)
 
-def r():
+def split_images():
   X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box  = train_test_split(
       images, class_labels, bbox_labels, test_size=0.30, random_state=42)
   # printDetails(X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box)
-  return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box
+  # return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box
+  train_data = {
+      "X_train": X_train,
+      "y_train_class": y_train_class,
+      "y_train_box": y_train_box
+  }
+  save_data(train_data_path,train_data)
+  
 
-r()
+  # Save test data
+  test_data = {
+      "X_test": X_test,
+      "y_test_class": y_test_class,
+      "y_test_box": y_test_box
+  }
+
+  save_data(test_data_path,train_data_path)
+
+def save_data(file_path, obj):
+    try:
+        dir_path = os.path.dirname(file_path)
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        with open(file_path, "wb") as file_obj:
+            dill.dump(obj, file_obj)
+
+    except Exception as e:
+        raise Exception(e)
+
+if __name__ == "__main__":
+  split_images()

@@ -3,4 +3,5 @@ __pycache__/
 *.py[cod]
 
 pistol_Log/train
+pistol_Log/validation
 artifacts/

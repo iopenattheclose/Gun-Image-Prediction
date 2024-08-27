@@ -3,7 +3,7 @@ from preprocess1 import *
 import pickle
 import dill
 
-trained_model_file_path=os.path.join("artifacts","model.pkl")
+trained_model_file_path=os.path.join("artifacts","model.dill")
 log_dir = "pistol_Log"
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
 
@@ -58,15 +58,15 @@ print("Loss calculation ended","\n")
 ResNet101_final.compile(optimizer=opt,loss=losses,loss_weights=loss_weights,metrics=metrics)
 
 def startTrain():
-   X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box = r()
+   X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box = load_model_and_data()
    history = ResNet101_final.fit(x=X_train, y={"class_output":y_train_class, "box_output":y_train_box},
                                  validation_data=(X_test, {"class_output":y_test_class, "box_output":y_test_box}),
                                  batch_size=128,
                                  epochs=1,
                                  callbacks=(tensorboard_callback)
                               )
-   # print(history)
-   return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history
+   return history
+#    return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history
 
 
 
@@ -82,6 +82,38 @@ def save_object(file_path, obj):
     except Exception as e:
         raise Exception(e)
     
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+
+    except Exception as e:
+      raise Exception(e)
+    
+def load_model_and_data():
+    try:
+        # model_path = os.path.join("artifacts", "model.dill")
+        train_data_path = os.path.join("artifacts", "train.dill")
+        test_data_path = os.path.join("artifacts", "test.dill")
+
+        # model = load_object(file_path=model_path)
+        train_data = load_object(file_path=train_data_path)
+        test_data = load_object(file_path=test_data_path)
+
+        X_train = train_data["X_train"]
+        y_train_class = train_data["y_train_class"]
+        y_train_box = train_data["y_train_box"]
+
+        X_test = test_data["X_test"]
+        y_test_class = test_data["y_test_class"]
+        y_test_box = test_data["y_test_box"]
+
+        return X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box
+
+    except Exception as e:
+        raise Exception(e)
+
+
 if __name__ == "__main__":
     startTrain()
     save_object(trained_model_file_path,ResNet101_final)

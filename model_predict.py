@@ -28,7 +28,7 @@ def load_object(file_path):
 
 def load_model():
     try:
-        model_path=os.path.join("artifacts","model.pkl")
+        model_path=os.path.join("artifacts","model.dill")
         # preprocessor_path=os.path.join("artifacts","preprocessor.pkl")
         model=load_object(file_path=model_path)
         return model
@@ -36,10 +36,12 @@ def load_model():
     except Exception as e:
         raise Exception(e)
     
-X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box,history = load_model()
-predict(X_test[0], ResNet101_final)
-eval_res = ResNet101_final.evaluate(X_test, {"class_output":y_test_class, "box_output":y_test_box})
-print(f'''Total Loss: {eval_res[0]}\nBBox MSE Loss{eval_res[1]}\nClass BCE Loss: {eval_res[2]}\nBBox MSE: {eval_res[3]}\nAccuracy Score: {eval_res[4]}\n''')
+X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box = load_model_and_data()
+model = load_model()
+predict(X_test[0], model)
+eval_res = model.evaluate(X_test, {"class_output":y_test_class, "box_output":y_test_box})
+print(eval_res)
+# print(f'''Total Loss: {eval_res[0]}\nBBox MSE Loss{eval_res[1]}\nClass BCE Loss: {eval_res[2]}\nBBox MSE: {eval_res[3]}\nAccuracy Score: {eval_res[4]}\n''')
 
 def cv_coords(box):
   '''
@@ -64,7 +66,10 @@ def plot_prediction(img, label, pred):
   end_point = (bbox[2],bbox[3])
   img=img.copy()
   img = cv2.rectangle(img,start_point,end_point,(255,255,0), 3)
-  cv2.putText(img, 'Ground Truth', (start_point[0],start_point[1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0))
+  plt.axis('off')
+  plt.imshow(img)
+  plt.show()
+
 
 
   # annotate prediction
@@ -73,11 +78,10 @@ def plot_prediction(img, label, pred):
   end_point = (bbox[2],bbox[3])
   img=img.copy()
   img = cv2.rectangle(img,start_point,end_point,(0,0,255), 3)
-  cv2.putText(img, 'Prediction', (start_point[0],start_point[1]-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0))
-
-
+  img = cv2.rectangle(img,start_point,end_point,(255,255,0), 3)
   plt.axis('off')
   plt.imshow(img)
+  plt.show()
 
 # set index which will be used for prediction and plot
 index = 500

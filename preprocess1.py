@@ -4,8 +4,8 @@ from sklearn.model_selection import train_test_split
 import dill
 
 datapath, annot_files, img_files = getImageFolderDetails()
-train_data_path: str=os.path.join('artifacts',"train.pkl")
-test_data_path: str=os.path.join('artifacts',"test.pkl")
+train_data_path: str=os.path.join('artifacts',"train.dill")
+test_data_path: str=os.path.join('artifacts',"test.dill")
 
 def return_bbox(label_path):
   ''' read and return bbox from text file'''
@@ -62,6 +62,7 @@ def split_images():
       images, class_labels, bbox_labels, test_size=0.30, random_state=42)
   # printDetails(X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box)
   # return X_train, X_test, y_train_class, y_test_class, y_train_box, y_test_box
+
   train_data = {
       "X_train": X_train,
       "y_train_class": y_train_class,
@@ -77,7 +78,7 @@ def split_images():
       "y_test_box": y_test_box
   }
 
-  save_data(test_data_path,train_data_path)
+  save_data(test_data_path,test_data)
 
 def save_data(file_path, obj):
     try:

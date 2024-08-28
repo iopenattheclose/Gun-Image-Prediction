@@ -61,8 +61,8 @@ def startTrain():
    X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box = load_model_and_data()
    history = ResNet101_final.fit(x=X_train, y={"class_output":y_train_class, "box_output":y_train_box},
                                  validation_data=(X_test, {"class_output":y_test_class, "box_output":y_test_box}),
-                                 batch_size=128,
-                                 epochs=1,
+                                 batch_size=32,
+                                 epochs=10,
                                  callbacks=(tensorboard_callback)
                               )
    return history

@@ -36,12 +36,7 @@ def load_model():
     except Exception as e:
         raise Exception(e)
     
-X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box = load_model_and_data()
-model = load_model()
-predict(X_test[0], model)
-eval_res = model.evaluate(X_test, {"class_output":y_test_class, "box_output":y_test_box})
-print(eval_res)
-# print(f'''Total Loss: {eval_res[0]}\nBBox MSE Loss{eval_res[1]}\nClass BCE Loss: {eval_res[2]}\nBBox MSE: {eval_res[3]}\nAccuracy Score: {eval_res[4]}\n''')
+
 
 def cv_coords(box):
   '''
@@ -70,32 +65,38 @@ def plot_prediction(img, label, pred):
   plt.imshow(img)
   plt.show()
 
-
-
   # annotate prediction
   bbox = cv_coords(pred)
   start_point = (bbox[0],bbox[1])
   end_point = (bbox[2],bbox[3])
   img=img.copy()
   img = cv2.rectangle(img,start_point,end_point,(0,0,255), 3)
-  img = cv2.rectangle(img,start_point,end_point,(255,255,0), 3)
   plt.axis('off')
   plt.imshow(img)
   plt.show()
 
-# set index which will be used for prediction and plot
-index = 500
+def predict_selected_image():
+  # set index which will be used for prediction and plot
+  X_train, y_train_class, y_train_box, X_test, y_test_class, y_test_box = load_model_and_data()
+  model = load_model()
+  predict(X_test[0], model)
+  eval_res = model.evaluate(X_test, {"class_output":y_test_class, "box_output":y_test_box})
+  print(eval_res)
+# print(f'''Total Loss: {eval_res[0]}\nBBox MSE Loss{eval_res[1]}\nClass BCE Loss: {eval_res[2]}\nBBox MSE: {eval_res[3]}\nAccuracy Score: {eval_res[4]}\n''')
+  index = 500
 
-label = y_test_box[index]
+  label = y_test_box[index]
 
-img = X_test[index]
-pred_box, class_prob = predict(img, ResNet101_final)
+  img = X_test[index]
+  pred_box, class_prob = predict(img, model)
 
-print("Ground Truth: ",label )
-print("Predicted Bbox :", pred_box)
-
+  print("Ground Truth: ",label)
+  print("Predicted Bbox :", pred_box)
+  print("Class  :", class_prob)
+  return img,label,pred_box
 # plot_prediction(img, label, pred_box)
 
 if __name__ == "__main__":
+  img,label,pred_box = predict_selected_image()
   plot_prediction(img, label, pred_box)
    
